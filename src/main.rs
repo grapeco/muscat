@@ -21,13 +21,15 @@ fn execute(paths: Vec<PathBuf>, data: &str) {
         name.set_extension("");
 
         let parent = file.parent().expect("No such directory");
-
-        // println!("{:?} {:?}", parent, name);
+        
         println!("{}", 
             format!(
-                "{}-temp.{}", 
-                name.display(),
-                file.extension().expect("Don't have extension").display(),
+                "{}-temp{}", 
+                format!("{}", name.display()),
+                match file.extension() {
+                    Some(ext) => format!(".{}", ext.display()),
+                    None => format!(""),
+                }
             )
         );
 
@@ -37,9 +39,12 @@ fn execute(paths: Vec<PathBuf>, data: &str) {
                 data,
                 parent.join(
                     format!(
-                        "{}-temp.{}", 
-                        name.display(),
-                        file.extension().expect("Don't have extension").display(),
+                        "{}-temp{}", 
+                        format!("{}", name.display()),
+                        match file.extension() {
+                            Some(ext) => format!(".{}", ext.display()),
+                            None => format!(""),
+                        }
                     )
                 ).to_str().expect("No such file"),
             ],
