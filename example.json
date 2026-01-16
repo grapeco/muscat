@@ -1,0 +1,20 @@
+{
+  "data": "~/dotfiles/.config/muscat/catppuccin-mocha.json",
+    
+  "targets": [
+    "~/dotfiles/.config/waybar/config.jsonc",
+    "~/dotfiles/.config/waybar/style.css",
+    "~/dotfiles/.config/swaync/style.css",
+    "~/dotfiles/.config/cava/config",
+    "~/dotfiles/.config/starship.toml",
+    "~/dotfiles/.config/kitty/kitty.conf",
+    "~/dotfiles/.config/gtk-3.0/gtk.css",
+    "~/dotfiles/.config/gtk-4.0/gtk.css",
+    "~/dotfiles/.config/vesktop/themes/theme.css",
+    "~/dotfiles/.config/zed/settings.json",
+    "~/dotfiles/.config/zed/themes/base16.json",
+    "~/dotfiles/.config/hypr/hyprland.conf",
+    "~/dotfiles/.config/alacritty/alacritty.toml",
+    "~/dotfiles/.config/rofi/theme.rasi"
+  ]
+}

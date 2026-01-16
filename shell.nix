@@ -9,7 +9,6 @@ let
 in mkShell {
   buildInputs = with pkgs; [
     toolchain
-    mustache-go
   ];
 
   shellHook = ''
