@@ -98,17 +98,17 @@ fn main() {
     match File::open("~/.config/muscat/config.json".resolve()) {
         Ok(file) if file.metadata().unwrap().len() == 0 => {
             println!("Config file is empty, processing with args...");
-            sleep(Duration::from_secs(1));
+            sleep(Duration::from_millis(500));
             from_args();
         }
         Ok(_) => {
             println!("Processing with config file...");
-            sleep(Duration::from_secs(1));
+            sleep(Duration::from_millis(500));
             from_config();
         }
         Err(_) => {
             println!("Can't find config file, processing with args...");
-            sleep(Duration::from_secs(1));
+            sleep(Duration::from_millis(500));
             from_args();
         }
     }
