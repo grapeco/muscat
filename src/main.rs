@@ -85,7 +85,7 @@ fn from_args() {
 }
 
 fn from_config() {
-    let config = parse_config(PathBuf::from("/home/user/.config/muscat/config.json"));
+    let config = parse_config(PathBuf::from("~/.config/muscat/config.jsonc".resolve()));
     let targets = config.targets
         .iter()
         .map(|target| PathBuf::from(target.resolve()))
@@ -95,7 +95,7 @@ fn from_config() {
 }
 
 fn main() {
-    match File::open("~/.config/muscat/config.json".resolve()) {
+    match File::open("~/.config/muscat/config.jsonc".resolve()) {
         Ok(file) if file.metadata().unwrap().len() == 0 => {
             println!("Config file is empty, processing with args...");
             sleep(Duration::from_millis(500));
