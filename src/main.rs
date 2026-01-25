@@ -44,7 +44,7 @@ fn execute(paths: Vec<PathBuf>, data: PathBuf) {
         let template = mustache::compile_str(&temp_content).expect("Can't compile str");
 
         let target = template.render_to_string(&data_content).expect("Can't render");
-        fs::write(file, &target).expect("No such file");
+        fs::write(file, target).expect("No such file");
     }
 }
 
