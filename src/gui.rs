@@ -34,9 +34,7 @@ fn update(state: &mut State, message: Message) {
                 ))
             );
             
-            tokio::spawn(async move {
-                func::restart().await;
-            });
+            func::restart();
         }
     }
 }

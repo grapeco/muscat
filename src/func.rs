@@ -1,12 +1,11 @@
 use std::{
-    env, ffi::OsStr, fmt::Debug, fs::{self, File}, io::{BufRead, BufReader}, path::{Path, PathBuf}, time::Duration
+    env, ffi::OsStr, fmt::Debug, fs::{self, File}, io::{BufRead, BufReader}, path::{Path, PathBuf}, process::Command, thread::sleep, time::Duration
 };
 
 use mustache;
 use serde::Deserialize;
 use serde_json::Value;
 use resolve_path::PathResolveExt;
-use tokio::{process::Command, time::sleep};
 
 pub const PATH_TO_CONFIG: &str = "config.jsonc";
 
@@ -117,17 +116,16 @@ pub fn from_config() {
     execute(targets, config.data.resolve());
 }
 
-async fn kill_process<T: AsRef<OsStr> + Debug>(process: T) {
+fn kill_process<T: AsRef<OsStr> + Debug>(process: T) {
     println!("🔪 Завершаем процесс: {:?}", process);
     
     Command::new("pkill")
         .arg(process)
         .status()
-        .await
         .ok();
 }
 
-async fn start_process<T: AsRef<OsStr> + Debug>(process: T) {
+fn start_process<T: AsRef<OsStr> + Debug>(process: T) {
     println!("Запускаем процесс: {:?}", process);
         
     Command::new(process)
@@ -135,21 +133,35 @@ async fn start_process<T: AsRef<OsStr> + Debug>(process: T) {
         .ok();
 }
 
-pub async fn restart() {
+fn check_valid<T: AsRef<OsStr> + Debug>(process: T) -> bool {
+    let output = Command::new("pgrep")
+        .arg(process)
+        .output();
+    
+    match output {
+        Ok(val) if !val.stdout.is_empty() => return true,
+        Ok(_) => return false,
+        Err(_) => return false
+    }
+}
+
+pub fn restart() {
     let restarts = parse_config().restarts;
     
     // Iterating in list of restarts
     for i in restarts {
         println!("{}", &i);
         
-        kill_process(&i).await;
-        
-        sleep(Duration::from_millis(100)).await;
-        
-        let start_name = match i.trim() {
-            "zed" => "zeditor",
-            other => other
-        };
-        start_process(start_name).await;
+        if check_valid(&i) == true {
+            kill_process(&i);
+            
+            sleep(Duration::from_millis(100));
+            
+            let start_name = match i.trim() {
+                "zed" => "zeditor",
+                other => other
+            };
+            start_process(start_name);
+        }
     }
 }
