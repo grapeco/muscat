@@ -2,16 +2,22 @@
 
 with pkgs;
 let 
-  toolchain = with pkgs.fenix; combine [
-    complete.toolchain
-    targets.x86_64-unknown-linux-musl.latest.rust-std
+  depend = with pkgs; [
+    (fenix.combine [
+      fenix.complete.toolchain
+      fenix.targets.x86_64-unknown-linux-musl.latest.rust-std
+    ])
+    
+    wayland
+    libxkbcommon
   ]; 
 in mkShell {
-  buildInputs = with pkgs; [
-    toolchain
-  ];
+  buildInputs = depend;
 
   shellHook = ''
     export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
   '';
+  
+  LD_LIBRARY_PATH = lib.makeLibraryPath depend;
+  WINIT_UNIX_BACKEND = "wayland";
 }

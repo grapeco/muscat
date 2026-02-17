@@ -1,5 +1,5 @@
 {
-  "data": "~/dotfiles/.config/muscat/catppuccin-mocha.json",
+  "data": "~/dotfiles/.config/muscat/themes/catppuccin.json",
     
   "targets": [
     "~/dotfiles/.config/waybar/config.jsonc",
@@ -16,5 +16,10 @@
     "~/dotfiles/.config/hypr/hyprland.conf",
     "~/dotfiles/.config/alacritty/alacritty.toml",
     "~/dotfiles/.config/rofi/theme.rasi"
+  ],
+  
+  "restarts": [
+    "waybar",
+    "zed"
   ]
 }
