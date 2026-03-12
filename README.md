@@ -1,38 +1,54 @@
-# Dependencies:
-## mustache - for text injection
-
 # How to use this program
 
-# --from "Data file path"
-## Example:
+# Template manual
+
+# Config manual
+
+## Structure of config
+1. Data - your source of colors and etc. Optional in GUI MODE
+2. Targets - your configs for applying theme
+3. Restarts - programms to restart after applying theme. Fully optional
+
+## First you need to set up your config
+
+1. Open ~/.config/muscat/config.jsonc
+2. Fill out the config, example:
 
 ```json
 {
-  "base00": "#1e1e2e",
-  "base01": "#181825",
-  "base02": "#313244",
-  "base03": "#45475a",
-  "base04": "#585b70",
-  "base05": "#cdd6f4",
-  "base06": "#f5e0dc",
-  "base07": "#b4befe",
-  "base08": "#f38ba8",
-  "base09": "#fab387",
-  "base0A": "#f9e2af",
-  "base0B": "#a6e3a1",
-  "base0C": "#94e2d5",
-  "base0D": "#89b4fa",
-  "base0E": "#cba6f7",
-  "base0F": "#f2cdcd",
-  "author": "https://github.com/catppuccin/catppuccin",
-  "scheme": "Catppuccin Mocha",
+  "data": "~/dotfiles/.config/muscat/themes/catppuccin.json",
+    
+  "targets": [
+    "~/dotfiles/.config/waybar/config.jsonc",
+    "~/dotfiles/.config/waybar/style.css",
+    "~/dotfiles/.config/swaync/style.css",
+    "~/dotfiles/.config/cava/config",
+    "~/dotfiles/.config/starship.toml",
+    "~/dotfiles/.config/kitty/kitty.conf",
+    "~/dotfiles/.config/gtk-3.0/gtk.css",
+    "~/dotfiles/.config/gtk-4.0/gtk.css",
+    "~/dotfiles/.config/vesktop/themes/theme.css",
+    "~/dotfiles/.config/zed/settings.json",
+    "~/dotfiles/.config/zed/themes/base16.json",
+    "~/dotfiles/.config/hypr/hyprland.conf",
+    "~/dotfiles/.config/alacritty/alacritty.toml",
+    "~/dotfiles/.config/rofi/theme.rasi"
+  ],
+  
+  "restarts": [
+    "waybar",
+    "zed",
+    "swaync"
+  ]
 }
 ```
 
-# --targets "Path to targets file"
-## Example contents of this file: 
+# GUI MODE
+## You need to run this programm with --gui argument and select your theme
 
-```
-/home/USER/dotfiles/.config/waybar/style.css
-/home/USER/dotfiles/.config/swaync/style.css
-```
+![screenshot](assets/preview.png)
+
+In GUI MODE programm searches theme in ~/.config/muscat/themes
+
+# CLI MODE
+## "restarts" field is still optional but you need to fill "data" field

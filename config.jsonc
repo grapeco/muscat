@@ -15,11 +15,12 @@
     "~/dotfiles/.config/zed/themes/base16.json",
     "~/dotfiles/.config/hypr/hyprland.conf",
     "~/dotfiles/.config/alacritty/alacritty.toml",
-    "~/dotfiles/.config/rofi/theme.rasi"
+    "~/dotfiles/.config/rofi/theme.rasi",
   ],
   
-  "restarts": [
-    "waybar",
-    "zed"
-  ]
+  // "restarts": [
+  //   "waybar",
+  //   "swaync",
+  //   "zed",
+  // ]
 }
