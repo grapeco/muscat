@@ -1,5 +1,7 @@
 {
   "data": "~/dotfiles/.config/muscat/themes/catppuccin.json",
+  
+  "data_dir": "~/.config/muscat/themes",
     
   "targets": [
     "~/dotfiles/.config/waybar/config.jsonc",

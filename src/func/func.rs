@@ -1,23 +1,46 @@
 use std::{
-    fmt::Debug, fs::{self}, path::{Path, PathBuf}, thread::sleep, time::Duration, 
+    fmt::Debug, fs::{self}, path::{Path, PathBuf}, thread::sleep, time::Duration 
 };
 
 use mustache;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use resolve_path::PathResolveExt;
 
-use super::process;
+use crate::func::process;
 
 // pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 pub const PATH_TO_CONFIG: &str = "config.jsonc";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     data: String,
+    pub data_dir: Option<PathBuf>,
     pub targets: Vec<String>,
     restarts: Option<Vec<String>>,
 }
+
+// FOR FUTURE, maybe
+
+// #[derive(Default, Clone, Serialize, Deserialize, Debug)]
+// #[allow(non_snake_case)]
+// pub struct Base16 {
+//     pub base00: String,
+//     pub base01: String,
+//     pub base02: String,
+//     pub base03: String,
+//     pub base04: String,
+//     pub base05: String,
+//     pub base06: String,
+//     pub base07: String,
+//     pub base08: String,
+//     pub base09: String,
+//     pub base0A: String,
+//     pub base0B: String,
+//     pub base0C: String,
+//     pub base0D: String,
+//     pub base0F: String,
+// }
 
 pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<String> {
     let directory = fs::read_dir(dir).unwrap();
@@ -31,18 +54,15 @@ pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<String> {
     return string_dir;
 }
 
-pub fn execute<T>(paths: Vec<T>, data: T)
+pub fn execute<T>(paths: Vec<T>, data_path: T)
 where 
     T: AsRef<Path> + Clone,
     PathBuf: From<T>
 {
-    let data_content: Value = json5::from_str::<Value>(
-        fs::read_to_string(data).unwrap().as_str()
-    ).expect("Can't parse data file");
+    let data_content = parse_theme(data_path.into());
 
     for file in paths {    
-        let mut name = PathBuf::from(file.clone());
-        name.set_extension("");
+        let name = PathBuf::from(file.clone()).with_extension("");
         
         // This code founds templates by target file name
         // Example: style.css(target) - style-temp.css(template)
@@ -65,6 +85,12 @@ where
     }
 }
 
+pub fn parse_theme(data_file: PathBuf) -> Value {
+    json5::from_str(
+        fs::read_to_string(&data_file.resolve()).unwrap().as_str()
+    ).expect("Can't parse data file")
+}
+
 pub fn parse_config() -> Config {
     let config_content = fs::read_to_string(PATH_TO_CONFIG.resolve()).expect("No such file");    
     let config: Config = json5::from_str(&config_content).unwrap();
@@ -82,8 +108,6 @@ pub fn from_config() {
     execute(targets, config.data.resolve());
     
     restart(); 
-    
-
 }
 
 pub fn restart() {
