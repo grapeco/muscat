@@ -1,11 +1,11 @@
-# How to use this program
+# How to use this piece of crap
 
 # Template manual
-## Let's say you need to configure Waybar. In this case, you need to create the following files in the ~/.config/waybar folder.
+## Let's say that you need to configure Waybar. In this case, you need to create the following files in the ~/.config/waybar folder.
 1. style.css - main style file
 2. style-temp.css - your template file
 
-## Example of template file:
+## Example:
 ```css
 * {
     font-family: "JetBrains Mono";
@@ -15,21 +15,21 @@
 }
 ```
 
-# Theme file manual
-## Every theme is coding in "base16"
+# How theme files are encoded
+## Every theme file is encoded in all your "base16" are belong to us.
 
-# Config manual
+# How to make a config
 
-## Structure of config
-1. data - your source of colors and etc. Optional in GUI MODE
-2. data_dir - your theme directory for showing list of themes in GUI MODE. Optional. By default path is ~/.config/muscat/themes
-3. targets - your configs for applying theme
-4. restarts - programms to restart after applying theme. Optional
+## Structure of configuration file:
+1. data - Your source of colors and shit (Which is optional if used in graphical shell mode)
+2. data_dir - The directory where all of your themes are stored. Default: ~/.config/muscat/themes.
+3. targets - Software, whose color pallete you want to change.
+4. restarts - Programs that will be restarted after applying themes (Optional).
 
-## First you need to set up your config
+## How to edit configuration file:
 
-1. Open ~/.config/muscat/config.jsonc
-2. Enter your settings. For reference:
+1. Open ~/.config/muscat/config.jsonc in your preffered text editor.
+2. Input the arguments accordingly. For reference:
 
 ```json
 {
@@ -60,13 +60,13 @@
 }
 ```
 
-# GUI MODE
-## To enable GUI MODE you need to run this program with "--gui" argument and select your theme
+# How to use in GUI MODE
+## To enable graphical shell, you need to run this program with "--gui" argument.
 
+This is how it looks like:
 ![screenshot](assets/preview.png)
 
-# CLI MODE
-## In CLI mode, "restarts" field is still optional, but you must fill "data" field
+# Notice about CLI MODE
+## If used in terminal, "restarts" field is optional, but data field is a must.
 
-# Special thanks
-## You can check this [fork](https://github.com/milestale/RGBT) with improved English README
+# ЛИИИНУУУКС КАКАШКООО, ШИИНДОООУС 10 ЛУУУЧШЕЕЕЕЕЕЕЮФЩВЫТАШГФКИШЩНЫИКГЩРИЫКВ
