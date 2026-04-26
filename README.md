@@ -16,7 +16,7 @@
 ```
 
 # Theme file manual
-## Example of source file
+## Example of source file(All fields are optional)
 ```json
 {
   "scheme": "Catppuccin Mocha",
@@ -47,7 +47,8 @@
 1. data - your source of colors and etc. Optional in GUI MODE
 2. data_dir - your theme directory for showing list of themes in GUI MODE. Optional. By default path is ~/.config/muscat/themes
 3. targets - your configs for applying theme
-4. restarts - programms to restart after applying theme. Optional
+4. wallpapers - you can link your theme with wallpaper. Optional  
+5. restarts - programms to restart after applying theme. Optional
 
 ## First you need to set up your config
 
@@ -57,6 +58,8 @@
 ```json
 {
   "data": "~/dotfiles/.config/muscat/themes/catppuccin.json",
+  
+  "data_dir": "~/.config/muscat/themes",
     
   "targets": [
     "~/dotfiles/.config/waybar/config.jsonc",
@@ -72,13 +75,21 @@
     "~/dotfiles/.config/zed/themes/base16.json",
     "~/dotfiles/.config/hypr/hyprland.conf",
     "~/dotfiles/.config/alacritty/alacritty.toml",
-    "~/dotfiles/.config/rofi/theme.rasi"
+    "~/dotfiles/.config/rofi/theme.rasi",
+  ],
+  
+  "wallpapers": [
+    { "catppuccin": "~/Pictures/Wallpapers/purple-sunrise.png" },
+    { "gruvbox": "~/Pictures/Wallpapers/gruv-abstract-maze.png" },
+    { "everforest": "~/Pictures/Wallpapers/green-code.png" },
+    { "kanagawa": "~/Pictures/Wallpapers/monochrome.png" },
+    { "da-one-black": "~/Pictures/Wallpapers/monochrome.png" },
   ],
   
   "restarts": [
     "waybar",
+    "swaync",
     "zed",
-    "swaync"
   ]
 }
 ```

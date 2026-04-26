@@ -58,19 +58,21 @@ fn load_theme_from_file(filename: PathBuf) -> Theme {
 fn update(state: &mut State, message: Message) {
     match message {
         Message::FileSelected(file) => {
-            state.selected_file = Some(file.to_path_buf().with_extension("json"));
-            
-            let path = match &state.config.data_dir {
-                Some(p) => p.join(state.selected_file.clone().unwrap())
-                    .resolve()
-                    .to_path_buf(),
-                None => PathBuf::from("~/.config/muscat/themes/")
-                    .join(state.selected_file.clone().unwrap())
-                    .resolve()
-                    .to_path_buf(),
+            state.selected_file = match &state.config.data_dir {
+                Some(p) => Some(
+                    p.join(file.to_path_buf().with_extension("json"))
+                        .resolve()
+                        .to_path_buf()
+                ),
+                None => Some(
+                    PathBuf::from("~/.config/muscat/themes/")
+                        .join(file.to_path_buf().with_extension("json"))
+                        .resolve()
+                        .to_path_buf()
+                )
             };
             
-            state.current_theme = load_theme_from_file(path);
+            state.current_theme = load_theme_from_file(state.selected_file.as_ref().unwrap().to_owned());
         }
         Message::PickFile => {
             let file = rfd::FileDialog::new()
@@ -86,14 +88,9 @@ fn update(state: &mut State, message: Message) {
             let targets = parse_config().targets
                 .iter()
                 .map(|target| target.resolve().to_path_buf())
-                .collect();
+                .collect();         
             
-            let path = match &state.config.data_dir {
-                Some(p) => p.resolve().join(state.selected_file.clone().unwrap()),
-                None => PathBuf::from("~/.config/muscat/themes/".resolve()).join(state.selected_file.as_ref().unwrap())
-            };            
-            
-            execute(targets, path);
+            execute(targets, state.selected_file.as_ref().unwrap().to_owned());
             
             if let Some(walls) = &mut state.config.wallpapers {
                 set_wallpaper(walls.to_owned(), state.selected_file.as_ref().unwrap().name_without_extension());

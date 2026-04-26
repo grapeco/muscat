@@ -9,8 +9,7 @@ use resolve_path::PathResolveExt;
 
 use crate::func::process;
 
-//pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
-pub const PATH_TO_CONFIG: &str = "config.jsonc";
+pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
