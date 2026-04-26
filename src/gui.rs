@@ -1,14 +1,18 @@
-use std::{path::{Path, PathBuf}};
+use std::{path::PathBuf};
 
 use hex_color::HexColor;
 use iced::{Color, Element, Theme, widget::{button, column, pick_list, text}};
 use resolve_path::PathResolveExt;
 
-use crate::func::func::{self, Config, execute, list_dir, parse_config, parse_theme};
+use crate::func::{
+    func::{self, Config, execute, list_dir, parse_config, parse_theme}, 
+    process::set_wallpaper,
+    traits::{PathBufExt, StringExt}
+};
 
 #[derive(Clone)]
 struct State {
-    selected_file: Option<String>,
+    selected_file: Option<PathBuf>,
     current_theme: Theme,
     config: Config
 }
@@ -54,7 +58,7 @@ fn load_theme_from_file(filename: PathBuf) -> Theme {
 fn update(state: &mut State, message: Message) {
     match message {
         Message::FileSelected(file) => {
-            state.selected_file = Some(file);
+            state.selected_file = Some(file.to_path_buf().with_extension("json"));
             
             let path = match &state.config.data_dir {
                 Some(p) => p.join(state.selected_file.clone().unwrap())
@@ -74,7 +78,7 @@ fn update(state: &mut State, message: Message) {
                 .pick_file();
             
             match file {
-                Some(f) => update(state, Message::FileSelected(f.to_string_lossy().into_owned())),
+                Some(f) => update(state, Message::FileSelected(f.display().to_string())),
                 None => update(state, Message::FileSelected("".to_string()))
             }
         }
@@ -86,10 +90,14 @@ fn update(state: &mut State, message: Message) {
             
             let path = match &state.config.data_dir {
                 Some(p) => p.resolve().join(state.selected_file.clone().unwrap()),
-                None => PathBuf::from("~/.config/muscat/themes/".resolve()).join(state.selected_file.clone().unwrap())
+                None => PathBuf::from("~/.config/muscat/themes/".resolve()).join(state.selected_file.as_ref().unwrap())
             };            
             
             execute(targets, path);
+            
+            if let Some(walls) = &mut state.config.wallpapers {
+                set_wallpaper(walls.to_owned(), state.selected_file.as_ref().unwrap().name_without_extension());
+            }
             
             func::restart();
         }
@@ -104,11 +112,12 @@ fn view(state: &State) -> Element<'_, Message> {
     
     let files: Vec<String> = list_dir(path)
         .into_iter()
-        .filter(|item| Path::new(item).extension().unwrap() == "json")
+        .filter(|item| item.extension().unwrap() == "json")
+        .map(|p| p.name_without_extension())
         .collect();
     
     column![
-        pick_list(files, state.selected_file.as_ref(), Message::FileSelected)
+        pick_list(files, state.selected_file.as_ref().map(|p| p.name_without_extension()), Message::FileSelected)
             .placeholder("Select your favorite theme"),
         button(text("Process"))
             .on_press(Message::Execute),
@@ -117,13 +126,11 @@ fn view(state: &State) -> Element<'_, Message> {
     ].into()
 }
 
-pub fn gui() {    
-    let config = parse_config();
-    
+pub fn gui() {        
     let init_state = State {
         selected_file: None,
         current_theme: Theme::Dark,
-        config: config
+        config: parse_config(),
     };
     
     iced::application(move || init_state.clone(), update, view)

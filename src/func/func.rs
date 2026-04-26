@@ -1,15 +1,15 @@
 use std::{
-    fmt::Debug, fs::{self}, path::{Path, PathBuf}, thread::sleep, time::Duration 
+    collections::HashMap, fs::{self}, path::{Path, PathBuf}, thread::sleep, time::Duration 
 };
 
 use mustache;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 use serde_json::Value;
 use resolve_path::PathResolveExt;
 
 use crate::func::process;
 
-// pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
+//pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 pub const PATH_TO_CONFIG: &str = "config.jsonc";
 
 #[derive(Debug, Deserialize, Clone)]
@@ -17,6 +17,7 @@ pub struct Config {
     data: String,
     pub data_dir: Option<PathBuf>,
     pub targets: Vec<String>,
+    pub wallpapers: Option<Vec<HashMap<String, String>>>,
     restarts: Option<Vec<String>>,
 }
 
@@ -42,13 +43,13 @@ pub struct Config {
 //     pub base0F: String,
 // }
 
-pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<String> {
+pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<PathBuf> {
     let directory = fs::read_dir(dir).unwrap();
-    let mut string_dir: Vec<String> = Vec::new();
+    let mut string_dir: Vec<PathBuf> = Vec::new();
     
     for entry in directory {
-        let entry = entry.unwrap().file_name();
-        string_dir.push(entry.into_string().unwrap());
+        let entry = entry.unwrap();
+        string_dir.push(entry.path());
     }
     
     return string_dir;
@@ -123,7 +124,7 @@ pub fn restart() {
         if process::check_valid(&i) == true {
             process::kill_process(&i);
             
-            sleep(Duration::from_millis(100));
+            sleep(Duration::from_millis(300));
             
             let start_name = match i.trim() {
                 "zed" => "zeditor",
