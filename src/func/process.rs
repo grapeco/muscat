@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ffi::OsStr, fmt::Debug, process::Command};
+use std::{collections::HashMap, process::Command};
 
 use resolve_path::PathResolveExt;
 
@@ -30,7 +30,7 @@ pub fn start_process(process: &str) {
     run_command(vec![process]);
 }
 
-pub fn check_valid<T: AsRef<OsStr> + Debug>(process: T) -> bool {
+pub fn check_valid(process: &str) -> bool {
     let output = Command::new("pgrep")
         .arg(process)
         .output();

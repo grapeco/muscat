@@ -21,10 +21,11 @@
   ],
   
   "wallpapers": [
-    { "catppuccin": "~/Pictures/Wallpapers/purple-sunrise.png" },
+    { "catppuccin": "~/Pictures/Wallpapers/NixOs.png" },
     { "gruvbox": "~/Pictures/Wallpapers/gruv-abstract-maze.png" },
     { "everforest": "~/Pictures/Wallpapers/green-code.png" },
     { "kanagawa": "~/Pictures/Wallpapers/monochrome.png" },
+    { "monochrome": "~/Pictures/Wallpapers/monochrome.png" },
     { "da-one-black": "~/Pictures/Wallpapers/monochrome.png" },
   ],
   

@@ -5,8 +5,7 @@ use iced::{Color, Element, Theme, widget::{button, column, pick_list, text}};
 use resolve_path::PathResolveExt;
 
 use crate::func::{
-    func::{self, Config, execute, list_dir, parse_config, parse_theme}, 
-    process::set_wallpaper,
+    func::{Config, execute, list_dir, parse_config, parse_theme}, 
     traits::{PathBufExt, StringExt}
 };
 
@@ -90,13 +89,7 @@ fn update(state: &mut State, message: Message) {
                 .map(|target| target.resolve().to_path_buf())
                 .collect();         
             
-            execute(targets, state.selected_file.as_ref().unwrap().to_owned());
-            
-            if let Some(walls) = &mut state.config.wallpapers {
-                set_wallpaper(walls.to_owned(), state.selected_file.as_ref().unwrap().name_without_extension());
-            }
-            
-            func::restart();
+            execute(targets, state.selected_file.as_ref().unwrap().to_owned(), &state.config);
         }
     }
 }

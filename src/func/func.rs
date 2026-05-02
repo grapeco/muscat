@@ -7,7 +7,10 @@ use serde::{Deserialize};
 use serde_json::Value;
 use resolve_path::PathResolveExt;
 
-use crate::func::process;
+use crate::func::{
+    process::{self, set_wallpaper}, 
+    traits::PathBufExt
+};
 
 pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 
@@ -16,7 +19,7 @@ pub struct Config {
     data: String,
     pub data_dir: Option<PathBuf>,
     pub targets: Vec<String>,
-    pub wallpapers: Option<Vec<HashMap<String, String>>>,
+    wallpapers: Option<Vec<HashMap<String, String>>>,
     restarts: Option<Vec<String>>,
 }
 
@@ -54,12 +57,12 @@ pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<PathBuf> {
     return string_dir;
 }
 
-pub fn execute<T>(paths: Vec<T>, data_path: T)
+pub fn execute<T>(paths: Vec<T>, data_path: PathBuf, config: &Config)
 where 
     T: AsRef<Path> + Clone,
     PathBuf: From<T>
 {
-    let data_content = parse_theme(data_path.into());
+    let data_content = parse_theme(data_path.clone());
 
     for file in paths {    
         let name = PathBuf::from(file.clone()).with_extension("");
@@ -83,6 +86,14 @@ where
         let target = template.render_to_string(&data_content).expect("Can't render");
         fs::write(file, target).expect("No such file");
     }
+    
+    if let Some(walls) = &config.wallpapers {
+        set_wallpaper(walls.to_owned(), data_path.name_without_extension());
+    }
+    
+    if let Some(_) = config.restarts {
+        restart();
+    }
 }
 
 pub fn parse_theme(data_file: PathBuf) -> Value {
@@ -100,12 +111,13 @@ pub fn parse_config() -> Config {
 
 pub fn from_config() {
     let config = parse_config();
+    let data = config.data.resolve().to_path_buf();
     let targets = config.targets
         .iter()
         .map(|target| target.resolve())
         .collect();
     
-    execute(targets, config.data.resolve());
+    execute(targets, data, &config);
     
     restart(); 
 }
