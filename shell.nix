@@ -8,9 +8,11 @@ mkShell rec {
   ];
   
   buildInputs = with pkgs; [
-    (fenix.combine [
-      fenix.complete.toolchain
-    ])
+    # (fenix.combine [
+    #   fenix.complete.toolchain
+    # ])
+    rustc
+    cargo
     
     gtk3
     glib

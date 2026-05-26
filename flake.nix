@@ -12,8 +12,16 @@
   let
     overlays = [ fenix.overlays.default ];
     pkgs = import nixpkgs { inherit system overlays; };
+    shell = import ./shell.nix { inherit pkgs; };
   in {
     nixpkgs.overlays = [ fenix.overlays.default ];
-    devShells.default = import ./shell.nix { inherit pkgs; };
+    devShells.default = shell;
+    packages.default = pkgs.rustPlatform.buildRustPackage {
+      name = "muscat";
+      src = ./.;
+      cargoLock.lockFile = ./Cargo.lock;
+      nativeBuildInputs = shell.nativeBuildInputs;
+      buildInputs = shell.buildInputs;
+    };
   });
 }

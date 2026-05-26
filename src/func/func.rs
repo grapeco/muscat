@@ -117,9 +117,7 @@ pub fn from_config() {
         .map(|target| target.resolve())
         .collect();
     
-    execute(targets, data, &config);
-    
-    restart(); 
+    execute(targets, data, &config); 
 }
 
 pub fn restart() {

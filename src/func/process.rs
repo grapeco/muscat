@@ -6,7 +6,7 @@ fn run_command(args: Vec<&str>) {
     Command::new(args[0])
         .args(&args[1..])
         .spawn()
-        .ok();
+        .expect("Can't run command");
 }
 
 pub fn set_wallpaper(walls: Vec<HashMap<String, String>>, theme_name: String) {
@@ -19,13 +19,13 @@ pub fn set_wallpaper(walls: Vec<HashMap<String, String>>, theme_name: String) {
 }
 
 pub fn kill_process(process: &str) {
-    println!("🔪 Завершаем процесс: {:?}", process);
+    println!("Killing process: {:?}", process);
     
     run_command(vec!["pkill", process]);
 }
 
 pub fn start_process(process: &str) {
-    println!("Запускаем процесс: {:?}", process);
+    println!("Starting process: {:?}", process);
         
     run_command(vec![process]);
 }
