@@ -14,7 +14,6 @@
     pkgs = import nixpkgs { inherit system overlays; };
     shell = import ./shell.nix { inherit pkgs; };
   in {
-    nixpkgs.overlays = [ fenix.overlays.default ];
     devShells.default = shell;
     packages.default = pkgs.rustPlatform.buildRustPackage {
       name = "muscat";
