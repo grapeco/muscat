@@ -1,10 +1,17 @@
-use std::{collections::HashMap, process::Command};
+use std::{
+    collections::HashMap, process::{Command, Stdio}, thread::sleep, time::Duration 
+};
 
 use resolve_path::PathResolveExt;
+
+use crate::func::func::parse_config;
 
 fn run_command(args: Vec<&str>) {
     Command::new(args[0])
         .args(&args[1..])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .spawn()
         .expect("Can't run command");
 }
@@ -39,5 +46,30 @@ pub fn check_valid(process: &str) -> bool {
         Ok(val) if !val.stdout.is_empty() => return true,
         Ok(_) => return false,
         Err(_) => return false
+    }
+}
+
+pub fn restart() {
+    let restarts = match parse_config().restarts {
+        Some(vec) => vec,
+        None => vec![]
+    };
+    
+    // Iterating in list of restarts
+    for i in restarts {
+        println!("{}", &i);
+        
+        if check_valid(&i) == true {
+            kill_process(&i);
+            
+            sleep(Duration::from_millis(300));
+            
+            let start_name = match i.trim() {
+                "zed" => "zeditor",
+                other => other
+            };
+            
+            start_process(start_name);
+        }
     }
 }

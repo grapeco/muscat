@@ -84,7 +84,7 @@ fn update(state: &mut State, message: Message) {
             }
         }
         Message::Execute => {
-            let targets = parse_config().targets
+            let targets = state.config.targets
                 .iter()
                 .map(|target| target.resolve().to_path_buf())
                 .collect();         

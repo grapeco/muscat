@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap, fs::{self}, path::{Path, PathBuf}, thread::sleep, time::Duration 
+    collections::HashMap, fs::{self}, path::{Path, PathBuf}
 };
 
 use mustache;
@@ -8,7 +8,7 @@ use serde_json::Value;
 use resolve_path::PathResolveExt;
 
 use crate::func::{
-    process::{self, set_wallpaper}, 
+    process::{restart, set_wallpaper}, 
     traits::PathBufExt
 };
 
@@ -20,7 +20,7 @@ pub struct Config {
     pub data_dir: Option<PathBuf>,
     pub targets: Vec<String>,
     wallpapers: Option<Vec<HashMap<String, String>>>,
-    restarts: Option<Vec<String>>,
+    pub restarts: Option<Vec<String>>,
 }
 
 // FOR FUTURE, maybe
@@ -118,28 +118,4 @@ pub fn from_config() {
         .collect();
     
     execute(targets, data, &config); 
-}
-
-pub fn restart() {
-    let restarts = match parse_config().restarts {
-        Some(vec) => vec,
-        None => vec![]
-    };
-    
-    // Iterating in list of restarts
-    for i in restarts {
-        println!("{}", &i);
-        
-        if process::check_valid(&i) == true {
-            process::kill_process(&i);
-            
-            sleep(Duration::from_millis(300));
-            
-            let start_name = match i.trim() {
-                "zed" => "zeditor",
-                other => other
-            };
-            process::start_process(start_name);
-        }
-    }
 }
