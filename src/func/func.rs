@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap, fs::{self}, path::{Path, PathBuf}
+    borrow::Cow, collections::HashMap, error::Error, fs::{self}, path::{Path, PathBuf}
 };
 
 use mustache;
@@ -16,9 +16,9 @@ pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
-    data: String,
+    pub data: PathBuf,
     pub data_dir: Option<PathBuf>,
-    pub targets: Vec<String>,
+    pub targets: Vec<PathBuf>,
     wallpapers: Option<Vec<HashMap<String, String>>>,
     pub restarts: Option<Vec<String>>,
 }
@@ -57,12 +57,12 @@ pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<PathBuf> {
     return string_dir;
 }
 
-pub fn execute<T>(paths: Vec<T>, data_path: PathBuf, config: &Config)
-where 
-    T: AsRef<Path> + Clone,
-    PathBuf: From<T>
-{
-    let data_content = parse_theme(data_path.clone());
+pub fn execute(paths: Vec<PathBuf>, data_path: PathBuf, config: Config) -> Result<(), Box<dyn Error>> {
+    let data_content = parse_theme(data_path.resolve().to_path_buf())?;
+    let paths: Vec<Cow<Path>> = paths
+        .iter()
+        .map(|target| target.resolve())
+        .collect();  
 
     for file in paths {    
         let name = PathBuf::from(file.clone()).with_extension("");
@@ -79,43 +79,32 @@ where
                 }
             )
         ).expect("Can't read template file");
-        
         let template = mustache::compile_str(&template_file_content).expect("Can't compile str");
 
         // Writing compiled mustache template into target file
         let target = template.render_to_string(&data_content).expect("Can't render");
         fs::write(file, target).expect("No such file");
     }
-    
+
+    // Check if wallpapers option is set
     if let Some(walls) = &config.wallpapers {
         set_wallpaper(walls.to_owned(), data_path.name_without_extension());
     }
-    
-    if let Some(_) = config.restarts {
-        restart();
+
+    // Check if restarts option is set
+    if let Some(rest) = &config.restarts {
+        restart(rest.to_owned());
     }
+
+    return Ok(());
 }
 
-pub fn parse_theme(data_file: PathBuf) -> Value {
-    json5::from_str(
-        fs::read_to_string(&data_file.resolve()).unwrap().as_str()
-    ).expect("Can't parse data file")
+pub fn parse_theme(data_file: PathBuf) -> Result<Value, Box<dyn Error>> {
+    let content = fs::read_to_string(data_file.resolve())?;
+    return Ok(json5::from_str(&content)?);
 }
 
-pub fn parse_config() -> Config {
-    let config_content = fs::read_to_string(PATH_TO_CONFIG.resolve()).expect("No such file");    
-    let config: Config = json5::from_str(&config_content).unwrap();
-    
-    return config;
-}
-
-pub fn from_config() {
-    let config = parse_config();
-    let data = config.data.resolve().to_path_buf();
-    let targets = config.targets
-        .iter()
-        .map(|target| target.resolve())
-        .collect();
-    
-    execute(targets, data, &config); 
+pub fn parse_config() -> Result<Config, Box<dyn Error>> {
+    let content = fs::read_to_string(PATH_TO_CONFIG.resolve())?;
+    return Ok(json5::from_str(&content)?);
 }

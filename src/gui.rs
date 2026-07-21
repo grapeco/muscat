@@ -37,7 +37,8 @@ fn hex_to_color(hex: &str) -> Color {
 }
 
 fn load_theme_from_file(filename: PathBuf) -> Theme {
-    let theme_file = parse_theme(filename);
+    // FOR TEST
+    let theme_file = parse_theme(filename).unwrap();
         
     let theme = Theme::custom(
         theme_file["name"].as_str().unwrap_or("").to_owned(),
@@ -84,12 +85,8 @@ fn update(state: &mut State, message: Message) {
             }
         }
         Message::Execute => {
-            let targets = state.config.targets
-                .iter()
-                .map(|target| target.resolve().to_path_buf())
-                .collect();         
-            
-            execute(targets, state.selected_file.as_ref().unwrap().to_owned(), &state.config);
+            // I USE Result later
+            execute(state.config.targets.to_owned(), state.selected_file.as_ref().unwrap().to_owned(), state.config.to_owned());
         }
     }
 }
@@ -120,7 +117,8 @@ pub fn gui() {
     let init_state = State {
         selected_file: None,
         current_theme: Theme::Dark,
-        config: parse_config(),
+        // FOR TEST
+        config: parse_config().unwrap(),
     };
     
     iced::application(move || init_state.clone(), update, view)

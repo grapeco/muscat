@@ -6,10 +6,16 @@ pub trait PathBufExt {
 }
 impl PathBufExt for PathBuf {
     fn name_without_extension(&self) -> String {
-        return self.with_extension("").file_name().unwrap_or(OsStr::new("Undefined")).display().to_string();
+        return self.file_stem()
+            .and_then(|stem| stem.to_str())
+            .unwrap_or("Undefined")
+            .to_string();
     }
     fn name(&self) -> String {
-        return self.file_name().unwrap_or(OsStr::new("Undefined")).display().to_string();
+        return self.file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("Undefined")
+            .to_string();
     }
 }
 

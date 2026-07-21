@@ -1,10 +1,11 @@
 use clap::Parser;
 
 mod func;
+mod cli;
 mod gui;
 
 #[derive(Parser, Debug)]
-#[command(about)]
+#[command(disable_help_flag = true)]
 struct Cli {
     #[arg(long)]
     gui: bool,
@@ -25,6 +26,6 @@ fn main() {
     
     match cli.gui {
         true => gui::gui(),
-        false => func::func::from_config(),
+        false => cli::from_config(),
     }
 }

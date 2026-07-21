@@ -4,8 +4,6 @@ use std::{
 
 use resolve_path::PathResolveExt;
 
-use crate::func::func::parse_config;
-
 fn run_command(args: Vec<&str>) {
     Command::new(args[0])
         .args(&args[1..])
@@ -37,11 +35,14 @@ pub fn start_process(process: &str) {
     run_command(vec![process]);
 }
 
+// Check if process exists
 pub fn check_valid(process: &str) -> bool {
+    // pgrep returns PID of process
     let output = Command::new("pgrep")
         .arg(process)
         .output();
-    
+
+    // If pgrep returns nothing, then process don't exist
     match output {
         Ok(val) if !val.stdout.is_empty() => return true,
         Ok(_) => return false,
@@ -49,19 +50,13 @@ pub fn check_valid(process: &str) -> bool {
     }
 }
 
-pub fn restart() {
-    let restarts = match parse_config().restarts {
-        Some(vec) => vec,
-        None => vec![]
-    };
-    
+pub fn restart(restarts: Vec<String>) {
     // Iterating in list of restarts
     for i in restarts {
-        println!("{}", &i);
-        
         if check_valid(&i) == true {
             kill_process(&i);
-            
+
+            // Avoid race condition
             sleep(Duration::from_millis(300));
             
             let start_name = match i.trim() {
