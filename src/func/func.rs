@@ -14,7 +14,7 @@ use crate::func::{
 
 pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, Default)]
 pub struct Config {
     pub data: PathBuf,
     pub data_dir: Option<PathBuf>,
@@ -59,6 +59,7 @@ pub fn list_dir<T: AsRef<Path>>(dir: T) -> Vec<PathBuf> {
 
 pub fn execute(paths: Vec<PathBuf>, data_path: PathBuf, config: Config) -> Result<(), Box<dyn Error>> {
     let data_content = parse_theme(data_path.resolve().to_path_buf())?;
+    
     let paths: Vec<Cow<Path>> = paths
         .iter()
         .map(|target| target.resolve())
