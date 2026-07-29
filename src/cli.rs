@@ -9,8 +9,10 @@ pub fn from_config() {
             return;
         }
     }; 
+
+    let targets = &config.targets;
     
-    match execute(config.targets.clone(), config.data.clone(), config) {
+    match execute(targets.to_vec(), &config.data, &config) {
         Ok(_) => {},
         Err(e) => eprintln!("Execution error: {}", e),
     }; 

@@ -1,9 +1,9 @@
-use std::{path::PathBuf};
+use std::path::{Path};
 
-pub trait PathBufExt {
+pub trait PathExt {
     fn name_without_extension(&self) -> String;
 }
-impl PathBufExt for PathBuf {
+impl PathExt for Path {
     fn name_without_extension(&self) -> String {
         return self.file_stem()
             .and_then(|stem| stem.to_str())

@@ -9,7 +9,10 @@ mkShell rec {
   
   buildInputs = with pkgs; [
     (fenix.combine [
-      fenix.minimal.toolchain
+      (fenix.minimal.withComponents [
+        "cargo"
+        "rustc"
+      ])
     ])
     
     gtk3
