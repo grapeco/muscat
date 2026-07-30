@@ -4,7 +4,7 @@ use std::{
 
 use resolve_path::PathResolveExt;
 
-fn run_command(args: Vec<&str>) {
+fn run_command(args: &[&str]) {
     Command::new(args[0])
         .args(&args[1..])
         .stdin(Stdio::null())
@@ -14,11 +14,11 @@ fn run_command(args: Vec<&str>) {
         .expect("Can't run command");
 }
 
-pub fn set_wallpaper(walls: Vec<HashMap<String, String>>, theme_name: String) {
+pub fn set_wallpaper(walls: &[HashMap<String, String>], theme_name: String) {
     println!("{}", theme_name);
     for i in walls {
         if let Some(val) = i.get(&theme_name) {
-            run_command(vec!["awww", "img", val.resolve().to_str().unwrap()]);
+            run_command(&["awww", "img", val.resolve().to_str().unwrap()]);
         }
     }
 }
@@ -26,13 +26,13 @@ pub fn set_wallpaper(walls: Vec<HashMap<String, String>>, theme_name: String) {
 pub fn kill_process(process: &str) {
     println!("Killing process: {:?}", process);
     
-    run_command(vec!["pkill", process]);
+    run_command(&["pkill", process]);
 }
 
 pub fn start_process(process: &str) {
     println!("Starting process: {:?}", process);
         
-    run_command(vec![process]);
+    run_command(&[process]);
 }
 
 // Check if process exists
@@ -50,7 +50,7 @@ pub fn check_valid(process: &str) -> bool {
     }
 }
 
-pub fn restart(restarts: Vec<String>) {
+pub fn restart(restarts: &[String]) {
     // Iterating in list of restarts
     for i in restarts {
         if check_valid(&i) == true {

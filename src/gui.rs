@@ -5,8 +5,7 @@ use iced::{Color, Element, Theme, widget::{button, column, pick_list, text}};
 use resolve_path::PathResolveExt;
 
 use crate::func::{
-    func::{Config, execute, list_dir, parse_config, parse_theme}, 
-    traits::{PathExt}
+    func::{Config, execute, list_dir, parse_config, parse_theme}, process::{restart, set_wallpaper}, traits::PathExt
 };
 
 #[derive(Clone)]
@@ -38,7 +37,6 @@ fn hex_to_color(hex: &str) -> Color {
 }
 
 fn load_theme_from_file(filename: &Path, state: &mut State) -> Theme {
-    println!("{:?}", filename);
     let theme = match parse_theme(filename) {
         Ok(file) => {
             state.status_messages.push(format!("Theme file {:?} is found\n", filename));
@@ -82,12 +80,22 @@ fn update(state: &mut State, message: Message) {
         Message::Execute => {
             match state.selected_file.as_ref() {
                 Some(file) => {
-                    if let Err(e) = execute(
-                        state.config.targets.clone(), 
+                    match execute(
+                        &state.config.targets.iter().map(|p| p.as_path()).collect::<Vec<&Path>>(), 
                         file, 
-                        &state.config
                     ) {
-                        state.status_messages.push(format!("Failed to execute: {}\n", e));
+                        Ok(_) => {
+                            // Check if wallpapers option is set
+                            if let Some(walls) = &state.config.wallpapers {
+                                set_wallpaper(walls, state.config.data.name_without_extension());
+                            }
+                        
+                            // Check if restarts option is set
+                            if let Some(rest) = &state.config.restarts {
+                                restart(rest);
+                            }
+                        }
+                        Err(e) => state.status_messages.push(format!("Failed to execute: {}\n", e)),
                     }
                 }
                 None => state.status_messages.push("Please, select your file\n".to_string()),
