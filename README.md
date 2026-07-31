@@ -35,7 +35,7 @@ inputs.muscat.url = "github:grapeco/muscat";
 Add in your configuration.nix
 ```nix
 environment.systemPackages = [
-  inputs.muscat.packages.${pkgs.stdenv.hostPlatform.syst}.default
+  inputs.muscat.packages.${pkgs.stdenv.hostPlatform.system}.default
 ];
 ```
 
