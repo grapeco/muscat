@@ -1,4 +1,43 @@
-# How to use this program
+# 🎨 Muscat - Theme Manager for Your Linux Desktop
+**Muscat** is a theme management tool for Linux desktops. It applies consistent color schemes across your entire workflow — from your terminal to your window manager, status bar, and beyond.
+
+## Features
+- 🎨 **Universal Theme Management** — Apply color schemes to all your favorite apps at once
+- 🖥️ **GUI & CLI Modes** — Use the visual theme picker or command-line for scripting
+- 🔄 **Auto Restart** — Automatically restart affected applications after theme changes
+- 🖼️ **Wallpaper Integration** — Link wallpapers to themes for a complete desktop experience
+- 📦 **Base16 Compatible** — Works with the popular Base16 color scheme format
+- ⚡ **Instant Preview** — See your theme changes in real-time via the GUI
+
+## Installation
+
+### Requirements
+- Linux distribution
+- Rust/Cargo
+- Git for cloning repository
+
+### From source
+```bash
+# Clone the repository
+git clone https://github.com/grapeco/muscat
+cd muscat
+
+# Build and install 
+cargo install --path .
+```
+
+### Nix
+Add in your flake.nix
+```nix
+inputs.muscat.url = "github:grapeco/muscat";
+```
+
+Add in your configuration.nix
+```nix
+environment.systemPackages = [
+  inputs.muscat.packages.${pkgs.stdenv.hostPlatform.syst}.default
+];
+```
 
 # Template manual
 ## Let's say you need to configure Waybar. In this case, you need to create the following files in the ~/.config/waybar folder.

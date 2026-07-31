@@ -5,7 +5,7 @@ use iced::{Color, Element, Theme, widget::{button, column, pick_list, text}};
 use resolve_path::PathResolveExt;
 
 use crate::func::{
-    func::{Config, execute, list_dir, parse_config, parse_theme}, process::{restart, set_wallpaper}, traits::PathExt
+    func::{Config, THEME_DIR, execute, list_dir, parse_config, parse_theme}, process::{restart, set_wallpaper}, traits::PathExt
 };
 
 #[derive(Clone)]
@@ -87,7 +87,7 @@ fn update(state: &mut State, message: Message) {
                         Ok(_) => {
                             // Check if wallpapers option is set
                             if let Some(walls) = &state.config.wallpapers {
-                                set_wallpaper(walls, state.config.data.name_without_extension());
+                                set_wallpaper(walls, state.config.theme.name_without_extension());
                             }
                         
                             // Check if restarts option is set
@@ -105,10 +105,7 @@ fn update(state: &mut State, message: Message) {
 }
 
 fn view(state: &State) -> Element<'_, Message> {
-    let path = match &state.config.data_dir {
-        Some(p) => p.resolve(),
-        None => "~/.config/muscat/themes/".resolve()
-    };    
+    let path = Path::new(THEME_DIR).resolve().to_path_buf();
 
     let themes: Vec<String> = match list_dir(&path) {
         Ok(f) => f.iter()

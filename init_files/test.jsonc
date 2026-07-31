@@ -1,0 +1,19 @@
+{
+  // Theme name from themes folder
+  // Optional in GUI Mode
+  "theme": "catppuccin",
+  
+  "targets": [
+    "path/to/target"
+  ],
+
+  // Optional
+  "wallpapers": [
+    { "theme": "path/to/wallpaper" }
+  ],
+
+  // Optional
+  "restarts": [
+    "program"
+  ]
+}

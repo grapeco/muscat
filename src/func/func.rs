@@ -1,21 +1,52 @@
 use std::{
-    borrow::Cow, collections::HashMap, error::Error, fs::{self}, path::{Path, PathBuf}
+    borrow::Cow, collections::HashMap, error::Error, fs::{self, File}, io::Write, path::{Path, PathBuf}
 };
 
 use mustache;
 use resolve_path::PathResolveExt;
 use serde::{Deserialize};
-use serde_json::Value;
+use serde_json::{Value};
 
 pub const PATH_TO_CONFIG: &str = "~/.config/muscat/config.jsonc";
+pub const THEME_DIR: &str = "~/.config/muscat/themes";
 
 #[derive(Debug, Deserialize, Clone, Default)]
 pub struct Config {
-    pub data: PathBuf,
-    pub data_dir: Option<PathBuf>,
+    pub theme: PathBuf,
     pub targets: Vec<PathBuf>,
     pub wallpapers: Option<Vec<HashMap<String, String>>>,
     pub restarts: Option<Vec<String>>,
+}
+
+pub fn init() -> Result<(), Box<dyn Error>> {
+    let resolved_config = PathBuf::from(PATH_TO_CONFIG.resolve());
+    let resolved_theme_dir = PathBuf::from(THEME_DIR.resolve());
+
+    // Create config file
+    if !resolved_config.exists() {
+        fs::create_dir_all(&resolved_config.parent().unwrap())?;
+        
+        let text = fs::read_to_string("./init_files/test.jsonc")?;
+
+        let mut file = File::create(&resolved_config)?;
+
+        file.write_all(text.as_bytes())?;
+    } 
+
+    // Create themes directory
+    if !resolved_theme_dir.exists() {
+        fs::create_dir_all(&resolved_theme_dir)?;
+
+        let text = fs::read_to_string("./init_files/catppuccin.json")?;
+
+        let mut file = File::create(&resolved_theme_dir.join("catppuccin.json"))?;
+
+        println!();
+
+        file.write_all(text.as_bytes())?;
+    }
+
+    Ok(())
 }
 
 pub fn list_dir<T: AsRef<Path>>(dir: T) -> Result<Vec<PathBuf>, Box<dyn Error>> {
