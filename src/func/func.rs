@@ -1,5 +1,5 @@
 use std::{
-    borrow::Cow, collections::HashMap, error::Error, fs::{self, File}, io::Write, path::{Path, PathBuf}
+    collections::HashMap, error::Error, fs::{self, File}, io::Write, path::{Path, PathBuf}
 };
 
 use mustache;
@@ -12,7 +12,7 @@ pub const THEME_DIR: &str = "~/.config/muscat/themes";
 
 #[derive(Debug, Deserialize, Clone, Default)]
 pub struct Config {
-    pub theme: PathBuf,
+    pub theme: String,
     pub targets: Vec<PathBuf>,
     pub wallpapers: Option<Vec<HashMap<String, String>>>,
     pub restarts: Option<Vec<String>>,
@@ -49,8 +49,8 @@ pub fn init() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn list_dir<T: AsRef<Path>>(dir: T) -> Result<Vec<PathBuf>, Box<dyn Error>> {
-    let directory = fs::read_dir(dir)?;
+pub fn list_dir(dir: &Path) -> Result<Vec<PathBuf>, Box<dyn Error>> {
+    let directory = fs::read_dir(dir.resolve())?;
     let mut string_dir: Vec<PathBuf> = Vec::new();
     
     for entry in directory {
@@ -61,15 +61,11 @@ pub fn list_dir<T: AsRef<Path>>(dir: T) -> Result<Vec<PathBuf>, Box<dyn Error>> 
     return Ok(string_dir);
 }
 
-pub fn execute(paths: &[&Path], data_path: &Path) -> Result<(), Box<dyn Error>> {
+pub fn execute(paths: &[PathBuf], data_path: &Path) -> Result<(), Box<dyn Error>> {
     let data_content = parse_theme(&data_path.resolve())?;
-    
-    let paths: Vec<Cow<Path>> = paths
-        .iter()
-        .map(|target| target.resolve())
-        .collect();  
 
     for file in paths {    
+        let file = file.resolve();
         let name = file.with_extension("");
         
         // This code founds templates by target file name

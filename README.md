@@ -83,8 +83,7 @@ environment.systemPackages = [
 # Config manual
 
 ## Structure of config
-1. data - your source of colors and etc. Optional in GUI MODE
-2. data_dir - your theme directory for showing list of themes in GUI MODE. Optional. By default path is ~/.config/muscat/themes
+1. theme - your source of colors and etc. Optional in GUI MODE
 3. targets - your configs for applying theme
 4. wallpapers - you can link your theme with wallpaper. Optional  
 5. restarts - programms to restart after applying theme. Optional
@@ -96,25 +95,23 @@ environment.systemPackages = [
 
 ```json
 {
-  "data": "~/dotfiles/.config/muscat/themes/catppuccin.json",
-  
-  "data_dir": "~/.config/muscat/themes",
+  "theme": "catppuccin",
     
   "targets": [
-    "~/dotfiles/.config/waybar/config.jsonc",
-    "~/dotfiles/.config/waybar/style.css",
-    "~/dotfiles/.config/swaync/style.css",
-    "~/dotfiles/.config/cava/config",
-    "~/dotfiles/.config/starship.toml",
-    "~/dotfiles/.config/kitty/kitty.conf",
-    "~/dotfiles/.config/gtk-3.0/gtk.css",
-    "~/dotfiles/.config/gtk-4.0/gtk.css",
-    "~/dotfiles/.config/vesktop/themes/theme.css",
-    "~/dotfiles/.config/zed/settings.json",
-    "~/dotfiles/.config/zed/themes/base16.json",
-    "~/dotfiles/.config/hypr/hyprland.conf",
-    "~/dotfiles/.config/alacritty/alacritty.toml",
-    "~/dotfiles/.config/rofi/theme.rasi",
+    "~/.config/waybar/config.jsonc",
+    "~/.config/waybar/style.css",
+    "~/.config/swaync/style.css",
+    "~/.config/cava/config",
+    "~/.config/starship.toml",
+    "~/.config/kitty/kitty.conf",
+    "~/.config/gtk-3.0/gtk.css",
+    "~/.config/gtk-4.0/gtk.css",
+    "~/.config/vesktop/themes/theme.css",
+    "~/.config/zed/settings.json",
+    "~/.config/zed/themes/base16.json",
+    "~/.config/hypr/hyprland.conf",
+    "~/.config/alacritty/alacritty.toml",
+    "~/.config/rofi/theme.rasi",
   ],
   
   "wallpapers": [
@@ -139,7 +136,4 @@ environment.systemPackages = [
 ![screenshot](assets/preview.png)
 
 # CLI MODE
-## In CLI mode, "restarts" field is still optional, but you must fill "data" field
-
-# Special thanks
-## You can check this [fork](https://github.com/milestale/RGBT) with improved English README
+## In CLI mode, "restarts" field is still optional, but you must fill "theme" field

@@ -81,13 +81,13 @@ fn update(state: &mut State, message: Message) {
             match state.selected_file.as_ref() {
                 Some(file) => {
                     match execute(
-                        &state.config.targets.iter().map(|p| p.as_path()).collect::<Vec<&Path>>(), 
+                        &state.config.targets, 
                         file, 
                     ) {
                         Ok(_) => {
                             // Check if wallpapers option is set
                             if let Some(walls) = &state.config.wallpapers {
-                                set_wallpaper(walls, state.config.theme.name_without_extension());
+                                set_wallpaper(walls, &file.name_without_extension());
                             }
                         
                             // Check if restarts option is set
@@ -105,7 +105,7 @@ fn update(state: &mut State, message: Message) {
 }
 
 fn view(state: &State) -> Element<'_, Message> {
-    let path = Path::new(THEME_DIR).resolve().to_path_buf();
+    let path = Path::new(THEME_DIR);
 
     let themes: Vec<String> = match list_dir(&path) {
         Ok(f) => f.iter()

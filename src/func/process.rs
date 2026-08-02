@@ -14,10 +14,9 @@ fn run_command(args: &[&str]) {
         .expect("Can't run command");
 }
 
-pub fn set_wallpaper(walls: &[HashMap<String, String>], theme_name: String) {
-    println!("{}", theme_name);
+pub fn set_wallpaper(walls: &[HashMap<String, String>], theme_name: &str) {
     for i in walls {
-        if let Some(val) = i.get(&theme_name) {
+        if let Some(val) = i.get(theme_name) {
             run_command(&["awww", "img", val.resolve().to_str().unwrap()]);
         }
     }
@@ -52,14 +51,14 @@ pub fn check_valid(process: &str) -> bool {
 
 pub fn restart(restarts: &[String]) {
     // Iterating in list of restarts
-    for i in restarts {
-        if check_valid(&i) == true {
-            kill_process(&i);
+    for name in restarts {
+        if check_valid(&name) == true {
+            kill_process(&name);
 
             // Avoid race condition
             sleep(Duration::from_millis(300));
             
-            let start_name = match i.trim() {
+            let start_name = match name.trim() {
                 "zed" => "zeditor",
                 other => other
             };
