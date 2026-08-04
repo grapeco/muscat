@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap, process::{Command, Stdio}, thread::sleep, time::Duration 
+    collections::HashMap, process::{Command}, thread::sleep, time::Duration 
 };
 
 use resolve_path::PathResolveExt;
@@ -7,9 +7,6 @@ use resolve_path::PathResolveExt;
 fn run_command(args: &[&str]) {
     Command::new(args[0])
         .args(&args[1..])
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
         .spawn()
         .expect("Can't run command");
 }
@@ -23,15 +20,15 @@ pub fn set_wallpaper(walls: &[HashMap<String, String>], theme_name: &str) {
 }
 
 pub fn kill_process(process: &str) {
-    println!("Killing process: {:?}", process);
+    // println!("Killing process: {:?}", process);
     
     run_command(&["pkill", process]);
 }
 
-pub fn start_process(process: &str) {
-    println!("Starting process: {:?}", process);
+pub fn start_process(process: &[&str]) {
+    // println!("Starting process: {:?}", process);
         
-    run_command(&[process]);
+    run_command(process);
 }
 
 // Check if process exists
@@ -58,9 +55,9 @@ pub fn restart(restarts: &[String]) {
             // Avoid race condition
             sleep(Duration::from_millis(300));
             
-            let start_name = match name.trim() {
-                "zed" => "zeditor",
-                other => other
+            let start_name: &[&str] = match name.trim() {
+                "zed" => &["zeditor", "."],
+                other => &[other],
             };
             
             start_process(start_name);

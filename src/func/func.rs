@@ -26,7 +26,7 @@ pub fn init() -> Result<(), Box<dyn Error>> {
     if !resolved_config.exists() {
         fs::create_dir_all(&resolved_config.parent().unwrap())?;
         
-        let text = fs::read_to_string("./init_files/test.jsonc")?;
+        let text = fs::read_to_string("./init_files/config.jsonc")?;
 
         let mut file = File::create(&resolved_config)?;
 
