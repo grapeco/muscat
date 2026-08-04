@@ -121,7 +121,7 @@ Template files are application configs with **placeholder variables** that Musca
 
 **Syntax**: {{field_name}} where `field_name` matches with your theme.json
 
-**Example:** ~/.config/waybar/style-temp.css
+**Example:** `~/.config/waybar/style-temp.css`
 ```css
 * {
     font-family: "JetBrains Mono";
@@ -135,7 +135,7 @@ window {
 }
 ```
 How it works:
-1. You create a template file (e.g., style-temp.css) with #{{field_name}} placeholders
+1. You create a template file (e.g., style-temp.css) with {{field_name}} placeholders
 2. Muscat reads your selected theme file
 3. It generates the final file (e.g., style.css) with actual values
 4. Applications use the generated file
