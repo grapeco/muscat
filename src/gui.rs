@@ -1,7 +1,7 @@
 use std::{ffi::OsStr, path::{Path, PathBuf}};
 
 use hex_color::HexColor;
-use iced::{Color, Element, Theme, widget::{button, column, pick_list, text}};
+use iced::{Color, Element, Task, Theme, widget::{button, column, pick_list, text}};
 use resolve_path::PathResolveExt;
 
 use crate::func::{
@@ -21,6 +21,15 @@ enum Message {
     FileSelected(PathBuf),
     Execute,
     PickFile,
+    Error(Error)
+}
+
+#[derive(Clone)]
+enum Error {
+    PickerCancelled,
+    ParseFailed,
+    NoFile,
+    ExecuteError,
 }
 
 fn hex_to_color(hex: &str) -> Color {
@@ -36,46 +45,64 @@ fn hex_to_color(hex: &str) -> Color {
     );
 }
 
-fn load_theme_from_file(filename: &Path, state: &mut State) -> Theme {
-    let theme = match parse_theme(filename) {
+fn load_theme_from_file(filename: &Path, state: &mut State) -> Result<Theme, Error> {
+    match parse_theme(filename) {
         Ok(file) => {
             state.status_messages.push(format!("Theme file {:?} is found\n", filename));
-            Theme::custom(
-                file["scheme"].to_string(),
-                iced::theme::Palette {
-                    background: hex_to_color(file["base00"].as_str().unwrap_or("000000")),
-                    text: hex_to_color(file["base05"].as_str().unwrap_or("ffffff")),
-                    primary: hex_to_color(file["base0D"].as_str().unwrap_or("0000ff")),
-                    success: hex_to_color(file["base0B"].as_str().unwrap_or("00ff00")),
-                    warning: hex_to_color(file["base0A"].as_str().unwrap_or("ffff00")),
-                    danger: hex_to_color(file["base08"].as_str().unwrap_or("ff0000")),
-                }
-            )
+            return Ok(
+                Theme::custom(
+                    file["scheme"].to_string(),
+                    iced::theme::Palette {
+                        background: hex_to_color(file["base00"].as_str().unwrap_or("000000")),
+                        text: hex_to_color(file["base05"].as_str().unwrap_or("ffffff")),
+                        primary: hex_to_color(file["base0D"].as_str().unwrap_or("0000ff")),
+                        success: hex_to_color(file["base0B"].as_str().unwrap_or("00ff00")),
+                        warning: hex_to_color(file["base0A"].as_str().unwrap_or("ffff00")),
+                        danger: hex_to_color(file["base08"].as_str().unwrap_or("ff0000")),
+                    }
+                )   
+            );
         }
-        Err(e) => {
-            state.status_messages.push(format!("Failed to parse theme: {}\n", e));
-            Theme::Dark
+        Err(_) => {
+            return Err(Error::ParseFailed);
         }
     };
-
-    return theme;
 }
 
-fn update(state: &mut State, message: Message) {
+fn update(state: &mut State, message: Message) -> Task<Message> {
     match message {
         Message::FileSelected(file) => {
             state.selected_file = Some(file.clone());
-            state.current_theme = load_theme_from_file(&file, state);
+            
+            match load_theme_from_file(&file, state) {
+                Ok(theme) => state.current_theme = theme,
+                Err(_) => return Task::done(Message::Error(Error::ParseFailed)),
+            }
+
+            return Task::none();
         }
         Message::PickFile => {
-            let file = rfd::FileDialog::new()
-                .set_directory("~".resolve())
-                .pick_file();
-            
-            match file {
-                Some(f) => update(state, Message::FileSelected(f)),
-                None => state.status_messages.push("Failed to pick file\n".to_string()),
+            return Task::perform(
+                async {
+                    rfd::FileDialog::new()
+                        .set_directory("~".resolve())
+                        .pick_file()
+                },
+                |file| match file {
+                    Some(path) => Message::FileSelected(path),
+                    None => Message::Error(Error::PickerCancelled),
+                },
+            );
+        }
+        Message::Error(e) => {
+            match e {
+                Error::PickerCancelled => state.status_messages.push("Failed to pick file\n".to_string()),
+                Error::ParseFailed => state.status_messages.push("Failed to parse theme\n".to_string()),
+                Error::NoFile => state.status_messages.push("Please, select your file\n".to_string()),
+                Error::ExecuteError => state.status_messages.push("Failed to execute\n".to_string()),
             }
+
+            return Task::none();
         }
         Message::Execute => {
             match state.selected_file.as_ref() {
@@ -95,11 +122,13 @@ fn update(state: &mut State, message: Message) {
                                 restart(rest);
                             }
                         }
-                        Err(e) => state.status_messages.push(format!("Failed to execute: {}\n", e)),
+                        Err(_) => return Task::done(Message::Error(Error::ExecuteError))
                     }
                 }
-                None => state.status_messages.push("Please, select your file\n".to_string()),
+                None => return Task::done(Message::Error(Error::NoFile))
             }
+
+            return Task::none();
         }
     }
 }
