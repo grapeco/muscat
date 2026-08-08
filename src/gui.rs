@@ -45,10 +45,9 @@ fn hex_to_color(hex: &str) -> Color {
     );
 }
 
-fn load_theme_from_file(filename: &Path, state: &mut State) -> Result<Theme, Error> {
+fn load_theme_from_file(filename: &Path) -> Result<Theme, Error> {
     match parse_theme(filename) {
         Ok(file) => {
-            state.status_messages.push(format!("Theme file {:?} is found\n", filename));
             return Ok(
                 Theme::custom(
                     file["scheme"].to_string(),
@@ -74,7 +73,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
         Message::FileSelected(file) => {
             state.selected_file = Some(file.clone());
             
-            match load_theme_from_file(&file, state) {
+            match load_theme_from_file(&file) {
                 Ok(theme) => state.current_theme = theme,
                 Err(_) => return Task::done(Message::Error(Error::ParseFailed)),
             }
@@ -138,7 +137,7 @@ fn view(state: &State) -> Element<'_, Message> {
 
     let themes: Vec<String> = match list_dir(&path) {
         Ok(f) => f.iter()
-            .filter(|item| item.extension().unwrap_or(OsStr::new("")) == "json")
+            .filter(|item| item.extension() == Some(OsStr::new("json")))
             .map(|p| p.name_without_extension())
             .collect(),
         Err(_) => vec![],

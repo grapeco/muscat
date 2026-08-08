@@ -56,7 +56,7 @@ pub fn restart(restarts: &[String]) {
             sleep(Duration::from_millis(300));
             
             let start_name: &[&str] = match name.trim() {
-                "zed" => &["zeditor", "."],
+                "zed" => &["zeditor", "--foreground"],
                 other => &[other],
             };
             
